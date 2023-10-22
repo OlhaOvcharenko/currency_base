@@ -8,24 +8,36 @@ import styles from './ResultBox.module.scss';
 const ResultBox = ({ from, to, amount }) => {
 
   const convertedAmount = useMemo(() => {
-    if(from === 'USD' && to === 'PLN') return convertUSDToPLN(amount);
-    if(from === 'PLN' && to === 'USD') return convertPLNToUSD(amount);
-    return formatAmountInCurrency(amount, from);
+
+    if (from === to) return formatAmountInCurrency(amount, from);
+    if (from === 'USD' && to === 'PLN') return convertUSDToPLN(amount);
+    if (from === 'PLN' && to === 'USD') return convertPLNToUSD(amount);
+    
   }, [from, to, amount]);
 
   const formattedAmount = useMemo(() => formatAmountInCurrency(amount, from), [amount, from]);
 
-  return (
-    <div data-testid='convertedAmount' className={styles.result}>
-      {formattedAmount} = {formattedAmount !== convertedAmount ? `${convertedAmount}` : formattedAmount}
-    </div>
-  );
-};
+  if (amount < 0) {
+    return (
+      <div data-testid='negativeAmount' className={styles.result}>
+        <p>Wrong value...</p>
+      </div>
+    );
+  } else {
+    return(
+      <div data-testid='convertedAmount' className={styles.result}>
+        {formattedAmount} = {convertedAmount}
+      </div>
+    );
+  }
+
+}
 
 ResultBox.propTypes = {
   from: PropTypes.string.isRequired,
   to: PropTypes.string.isRequired,
   amount: PropTypes.number.isRequired,
 }
+
 
 export default ResultBox;
