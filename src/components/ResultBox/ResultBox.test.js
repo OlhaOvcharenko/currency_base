@@ -30,7 +30,7 @@ describe('Component ResultBox', () => {
       const result = (amount/ 3.5).toFixed(2);
 
       // Set test values to fields
-      expect(convertedAmount).toHaveTextContent(`${from}${amount} = $${result}`);
+      expect(convertedAmount).toHaveTextContent(`${from} ${amount} = $${result}`);
 
       // Clear the component
       cleanup();
@@ -64,16 +64,11 @@ describe('Component ResultBox', () => {
     }
   });
 
-  it('should render proper info about conversion when PLN == PLN, USD == USD ', () => {
-
-    const currencySymbols = {
-      USD: '$',
-      PLN: 'PLN',
-    };
+  it('should render proper info about conversion when PLN == PLN', () => {
 
     const testCases = [
-      { amount: 100,   from: 'USD', to: 'USD' },
-      { amount: 200,   from: 'USD', to: 'USD' },
+      { amount: 100,   from: 'PLN', to: 'PLN' },
+      { amount: 200,   from: 'PLN', to: 'PLN' },
       { amount: 35.50, from: 'PLN', to: 'PLN' },
       { amount: 337,   from: 'PLN', to: 'PLN' },
     ];
@@ -84,20 +79,43 @@ describe('Component ResultBox', () => {
       const from = testObj.from;
       const to = testObj.to;
 
-      const fromSymbol = currencySymbols[from];
-      const toSymbol = currencySymbols[to];
+      render(<ResultBox from={from} to={to} amount={Number(amount)} />);
+
+      // Find field elements
+      const convertedAmount = screen.getByTestId('convertedAmount');
+
+      expect(convertedAmount).toHaveTextContent(`${from} ${amount} = ${to} ${amount}`);
+
+      // Unmount the component
+      cleanup();
+    }
+  });
+
+  it('should render proper info about conversion when  USD == USD ', () => {
+
+    const testCases = [
+      { amount: 100,   from: 'USD', to: 'USD' },
+      { amount: 200,   from: 'USD', to: 'USD' },
+    ];
+
+    for (const testObj of testCases) {
+
+      const amount = (testObj.amount).toFixed(2);
+      const from = testObj.from;
+      const to = testObj.to;
 
       render(<ResultBox from={from} to={to} amount={Number(amount)} />);
 
       // Find field elements
       const convertedAmount = screen.getByTestId('convertedAmount');
 
-      expect(convertedAmount).toHaveTextContent(`${fromSymbol}${amount} = ${toSymbol}${amount}`);
+      expect(convertedAmount).toHaveTextContent(`$${amount} = $${amount}`);
 
       // Unmount the component
       cleanup();
     }
   });
+
 
   it('should render proper info about conversion when amount is negative', () => {
 
